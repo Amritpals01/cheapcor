@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheap Corner - Fashion & Fragrance</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <header>
+        <nav>
+            <div class="logo">CHEAP CORNER</div>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a onclick="scrollToSection('home')">Home</a></li>
+                <li><a onclick="scrollToSection('clothing-section')">Clothing</a></li>
+                <li><a onclick="scrollToSection('undergarments-section')">Undergarments</a></li>
+                <li><a onclick="scrollToSection('fragrance-section')">Fragrances</a></li>
+                <li><a onclick="scrollToSection('contact')">Contact</a></li>
+            </ul>
+            <div class="chat-icon" onclick="openWhatsApp()">
+                💬
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Cheap Corner</h1>
+            <p>Where Style Meets Affordability</p>
+            <button class="cta-button" onclick="scrollToSection('clothing-section')">
+                Explore Now
+            </button>
+        </div>
+    </section>
+
+    <div class="categories">
+        <div class="category-pills">
+            <div class="category-pill active" onclick="showAllProducts()">All</div>
+            <div class="category-pill" onclick="scrollToSection('clothing-section')">Clothing</div>
+            <div class="category-pill" onclick="scrollToSection('undergarments-section')">Undergarments</div>
+            <div class="category-pill" onclick="scrollToSection('fragrance-section')">Fragrances</div>
+        </div>
+    </div>
+
+    <section class="category-section reveal" id="clothing-section">
+        <div class="category-header">
+            <h2>Clothing</h2>
+            <p class="section-subtitle">Elevate Your Wardrobe</p>
+            <a class="view-all" onclick="filterAndScroll('clothing')">View All</a>
+        </div>
+        <div class="products-grid" id="clothingGrid">
+            <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
+                Loading products...
+            </div>
+        </div>
+    </section>
+
+    <section class="category-section reveal" id="undergarments-section">
+        <div class="category-header">
+            <h2>Undergarments</h2>
+            <p class="section-subtitle">Comfort Redefined</p>
+            <a class="view-all" onclick="filterAndScroll('undergarments')">View All</a>
+        </div>
+        <div class="products-grid" id="undergarmentsGrid">
+            <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
+                Loading products...
+            </div>
+        </div>
+    </section>
+
+    <section class="category-section reveal" id="fragrance-section">
+        <div class="category-header">
+            <h2>Fragrances</h2>
+            <p class="section-subtitle">Signature Scents</p>
+            <a class="view-all" onclick="filterAndScroll('fragrance')">View All</a>
+        </div>
+        <div class="products-grid" id="fragranceGrid">
+            <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
+                Loading products...
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>Your destination for premium fashion and fragrances at unbeatable prices. Quality without compromise.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Shop</h3>
+                <ul>
+                    <li><a onclick="scrollToSection('clothing-section')">Clothing</a></li>
+                    <li><a onclick="scrollToSection('undergarments-section')">Undergarments</a></li>
+                    <li><a onclick="scrollToSection('fragrance-section')">Fragrances</a></li>
+                    <li><a onclick="scrollToSection('home')">New Arrivals</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>info@cheapcorner.com</p>
+                <p id="footerPhone">Loading...</p>
+                <p>Shop No. 1319/2, Opposite  Kesar Da Dhaba, Chowk Passian, cantt-143001,Amritsar,Punjab</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 CHEAP CORNER. ALL RIGHTS RESERVED.</p>
+        </div>
+    </footer>
+
+    <div class="notification" id="notification">
+        Opening WhatsApp ✓
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase Configuration - PASTE YOUR CONFIG HERE
+        const firebaseConfig = {
+  apiKey: "AIzaSyAZqS_6qzwPN62P2eaZxRtaVRoEbP8lkb8",
+  authDomain: "cheap-corner-ca74d.firebaseapp.com",
+  databaseURL: "https://cheap-corner-ca74d-default-rtdb.firebaseio.com",
+  projectId: "cheap-corner-ca74d",
+  storageBucket: "cheap-corner-ca74d.firebasestorage.app",
+  messagingSenderId: "148646270166",
+  appId: "1:148646270166:web:e7f655ce0b7158f35b2577"
+};
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let products = [];
+        let whatsappNumber = '1234567890';
+
+        // Load products from Firebase
+        function loadProducts() {
+            db.ref('products').on('value', (snapshot) => {
+                const data = snapshot.val();
+                products = [];
+                
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        products.push({
+                            id: key,
+                            ...data[key]
+                        });
+                    });
+                }
+                
+                renderCategoryProducts();
+            });
+        }
+
+        // Load WhatsApp settings
+        function loadSettings() {
+            db.ref('settings/whatsappNumber').on('value', (snapshot) => {
+                const phone = snapshot.val();
+                if (phone) {
+                    whatsappNumber = phone;
+                    document.getElementById('footerPhone').textContent = '+' + phone;
+                }
+            });
+        }
+
+        function createProductCard(product) {
+            const imageHTML = product.image 
+                ? `<img src="${product.image}" alt="${product.name}">`
+                : `<span class="placeholder-icon">📷</span>`;
+            
+            return `
+                <div class="product-card reveal" onclick="viewProduct('${product.id}')">
+                    <div class="product-image">
+                        ${imageHTML}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">${product.category}</div>
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">₹${product.price}</div>
+                        <a href="#" class="whatsapp-btn" onclick="event.stopPropagation(); orderOnWhatsApp('${product.id}'); return false;">
+                            <span></span> Order Now
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCategoryProducts() {
+            const clothingProducts = products.filter(p => p.category === 'clothing');
+            const undergarmentProducts = products.filter(p => p.category === 'undergarments');
+            const fragranceProducts = products.filter(p => p.category === 'fragrance');
+
+            const clothingGrid = document.getElementById('clothingGrid');
+            const undergarmentGrid = document.getElementById('undergarmentsGrid');
+            const fragranceGrid = document.getElementById('fragranceGrid');
+
+            if (clothingProducts.length === 0) {
+                clothingGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No clothing items yet</div>';
+            } else {
+                clothingGrid.innerHTML = clothingProducts.map(createProductCard).join('');
+            }
+
+            if (undergarmentProducts.length === 0) {
+                undergarmentGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No undergarment items yet</div>';
+            } else {
+                undergarmentGrid.innerHTML = undergarmentProducts.map(createProductCard).join('');
+            }
+
+            if (fragranceProducts.length === 0) {
+                fragranceGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No fragrance items yet</div>';
+            } else {
+                fragranceGrid.innerHTML = fragranceProducts.map(createProductCard).join('');
+            }
+
+            setTimeout(() => {
+                const reveals = document.querySelectorAll('.reveal');
+                reveals.forEach((el, i) => {
+                    setTimeout(() => {
+                        el.classList.add('active');
+                    }, i * 100);
+                });
+            }, 100);
+        }
+
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            document.getElementById('navLinks').classList.remove('active');
+        }
+
+        function filterAndScroll(category) {
+            scrollToSection(category + '-section');
+        }
+
+        function showAllProducts() {
+            scrollToSection('clothing-section');
+            document.querySelectorAll('.category-pill').forEach(pill => {
+                pill.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function orderOnWhatsApp(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const message = `Hi! I'm interested in ordering:\n\n${product.name}\nPrice: ₹${product.price}\nCategory: ${product.category}`;
+            const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappURL, '_blank');
+            
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        function openWhatsApp() {
+            const message = 'Hi! I would like to know more about your products.';
+            const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappURL, '_blank');
+        }
+
+        function viewProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const message = `${product.name}\nPrice: ₹${product.price}\n\nClick "ORDER NOW" to purchase via WhatsApp`;
+            alert(message);
+        }
+
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        // Initialize
+        loadProducts();
+        loadSettings();
+
+        // Scroll reveal
+        window.addEventListener('scroll', () => {
+            const reveals = document.querySelectorAll('.reveal:not(.active)');
+            reveals.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight - 100;
+                if (isVisible) {
+                    el.classList.add('active');
+                }
+            });
+        });
+
+        // Parallax effect for hero
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            if (hero) {
+                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+    </script>
+</body>
+</html>

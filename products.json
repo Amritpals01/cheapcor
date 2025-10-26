@@ -1,0 +1,45 @@
+[
+    { 
+        "id": 1, 
+        "name": "UV Protection Arm Sleeves", 
+        "category": "clothing", 
+        "price": 299, 
+        "image": "src/511249198_17916075948104511_8605821537327249761_n.jpg"
+    },
+    { 
+        "id": 2, 
+        "name": "Premium Cotton T-Shirt", 
+        "category": "clothing", 
+        "price": 499, 
+        "image": "518989429_17917798185104511_6179410731375243050_n.jpg"
+    },
+    { 
+        "id": 3, 
+        "name": "Designer Dress", 
+        "category": "clothing", 
+        "price": 899, 
+        "image": "565471324_17929595358104511_8072580548584694689_n.jpg"
+    },
+    { 
+        "id": 4, 
+        "name": "Casual Button Shirt", 
+        "category": "clothing", 
+        "price": 599, 
+        "image": "567117705_17929595376104511_7015323667340106458_n.jpg"
+    },
+    { 
+        "id": 5, 
+        "name": "Sports Towel - Pink", 
+        "category": "clothing", 
+        "price": 249, 
+        "image": "564903882_17929595367104511_8631160573045157139_n.jpg"
+    },
+    { 
+        "id": 6, 
+        "name": "Jockey Sports Towel", 
+        "category": "undergarments", 
+        "price": 349, 
+        "image": "566662714_17929805676104511_7132692835311619405_n.jpg"
+    }
+
+]

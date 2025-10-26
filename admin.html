@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Cheap Corner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            color: #1a1a1a;
+            text-align: center;
+        }
+
+        .config-notice {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 2rem;
+        }
+
+        .config-notice.success {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: #1a1a1a;
+            border-bottom-color: #1a1a1a;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: monospace;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #333;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-edit {
+            background: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-edit:hover {
+            background: #0056b3;
+        }
+
+        .products-list {
+            margin-top: 2rem;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .product-image-preview {
+            width: 80px;
+            height: 80px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            overflow: hidden;
+        }
+
+        .product-image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .product-details {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 0.8rem;
+            background: #f0f0f0;
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-input-label:hover {
+            background: #e0e0e0;
+            border-color: #1a1a1a;
+        }
+
+        .image-preview {
+            margin-top: 1rem;
+            max-width: 200px;
+        }
+
+        .image-preview img {
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .settings-section {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-section h3 {
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .step {
+            background: #f9f9f9;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #1a1a1a;
+        }
+
+        .step h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .container {
+                padding: 1rem;
+            }
+            .product-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .product-actions {
+                width: 100%;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛍️ Cheap Corner Admin Panel</h1>
+
+        <div id="configStatus" class="config-notice">
+            ⚠️ Firebase not configured. Please go to "Firebase Config" tab to configure.
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('config')">Firebase Config</button>
+            <button class="tab" onclick="switchTab('add')">Add Product</button>
+            <button class="tab" onclick="switchTab('manage')">Manage Products</button>
+            <button class="tab" onclick="switchTab('settings')">Settings</button>
+        </div>
+        <!-- Firebase Config Tab -->
+        <div id="config-tab" class="tab-content active">
+            <h2>⚙️ Firebase Configuration</h2>
+            <p style="margin-bottom: 1rem;">Paste your Firebase config here:</p>
+            
+            <div class="form-group">
+                <label>Firebase Config (JSON format)</label>
+                <textarea id="firebaseConfig" rows="12" placeholder='{
+  "apiKey": "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  "authDomain": "your-project.firebaseapp.com",
+  "databaseURL": "https://your-project.firebaseio.com",
+  "projectId": "your-project-id",
+  "storageBucket": "your-project.appspot.com",
+  "messagingSenderId": "123456789",
+  "appId": "1:123456789:web:xxxxxxxxxxxxxxx"
+}'></textarea>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveFirebaseConfig()">Save Configuration</button>
+            
+            <div id="config-alert" style="margin-top: 1rem;"></div>
+        </div>
+
+        <!-- Add Product Tab -->
+        <div id="add-tab" class="tab-content">
+            <div id="add-alert"></div>
+            <form id="productForm" onsubmit="addProduct(event)">
+                <div class="form-group">
+                    <label>Product Name *</label>
+                    <input type="text" id="productName" required placeholder="e.g., Premium Cotton T-Shirt">
+                </div>
+
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="productCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="clothing">Clothing</option>
+                        <option value="undergarments">Undergarments</option>
+                        <option value="fragrance">Fragrance</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Price (₹) *</label>
+                    <input type="number" id="productPrice" required placeholder="299">
+                </div>
+
+                <div class="form-group">
+                    <label>Product Image (optional, max 1MB recommended)</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="productImage" accept="image/*" onchange="previewImage(this)">
+                        <label for="productImage" class="file-input-label">
+                            📷 Click to upload image
+                        </label>
+                    </div>
+                    <small style="color: #666;">Tip: Use smaller images for faster loading</small>
+                    <div id="imagePreview" class="image-preview" style="display: none;">
+                        <img id="previewImg" src="" alt="Preview">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add Product</button>
+            </form>
+        </div>
+
+        <!-- Manage Products Tab -->
+        <div id="manage-tab" class="tab-content">
+            <div id="manage-alert"></div>
+            <div class="products-list" id="productsList">
+                <div class="loading">Loading products...</div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings-tab" class="tab-content">
+            <div class="settings-section">
+                <h3>WhatsApp Settings</h3>
+                <div class="form-group">
+                    <label>WhatsApp Number (with country code, no + or spaces)</label>
+                    <input type="text" id="whatsappNumber" placeholder="919876543210">
+                    <small style="color: #666;">Example: India +91 9876543210 → enter: 919876543210</small>
+                </div>
+                <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+            </div>
+
+            <div id="settings-alert"></div>
+        </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; padding: 2rem; overflow-y: auto;">
+        <div style="max-width: 600px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 10px;">
+            <h2 style="margin-bottom: 1.5rem;">Edit Product</h2>
+            <form id="editForm" onsubmit="updateProduct(event)">
+                <input type="hidden" id="editProductId">
+                
+                <div class="form-group">
+                    <label>Product Name *</label>
+                    <input type="text" id="editProductName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="editProductCategory" required>
+                        <option value="clothing">Clothing</option>
+                        <option value="undergarments">Undergarments</option>
+                        <option value="fragrance">Fragrance</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Price (₹) *</label>
+                    <input type="number" id="editProductPrice" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Product Image</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="editProductImage" accept="image/*" onchange="previewEditImage(this)">
+                        <label for="editProductImage" class="file-input-label">
+                            📷 Change image (optional)
+                        </label>
+                    </div>
+                    <div id="editImagePreview" class="image-preview" style="margin-top: 1rem;">
+                        <img id="editPreviewImg" src="" alt="Current image" style="max-width: 200px; border-radius: 5px; border: 1px solid #ddd;">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Save Changes</button>
+                    <button type="button" class="btn btn-danger" onclick="closeEditModal()" style="flex: 1;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+        let db = null;
+        let products = [];
+
+        window.onload = function() {
+            initializeFirebase();
+        };
+
+        function initializeFirebase() {
+            const configStr = localStorage.getItem('firebaseConfig');
+            if (configStr) {
+                try {
+                    const config = JSON.parse(configStr);
+                    firebase.initializeApp(config);
+                    db = firebase.database();
+                    
+                    document.getElementById('configStatus').innerHTML = '✅ Firebase connected successfully!';
+                    document.getElementById('configStatus').className = 'config-notice success';
+                    
+                    loadProducts();
+                    loadSettings();
+                } catch (error) {
+                    showConfigError('Error: ' + error.message);
+                }
+            }
+        }
+
+        function saveFirebaseConfig() {
+            const configText = document.getElementById('firebaseConfig').value.trim();
+            
+            try {
+                const config = JSON.parse(configText);
+                
+                if (!config.apiKey || !config.projectId || !config.databaseURL) {
+                    throw new Error('Missing required fields');
+                }
+                
+                localStorage.setItem('firebaseConfig', configText);
+                showAlert('config-alert', 'Configuration saved! Reloading...', 'success');
+                
+                setTimeout(() => location.reload(), 1500);
+                
+            } catch (error) {
+                showAlert('config-alert', 'Invalid configuration: ' + error.message, 'danger');
+            }
+        }
+
+        function showConfigError(message) {
+            document.getElementById('configStatus').innerHTML = '❌ ' + message;
+            document.getElementById('configStatus').className = 'config-notice';
+        }
+
+        function switchTab(tab) {
+            if (!db && tab !== 'config') {
+                showAlert('config-alert', 'Please configure Firebase first!', 'danger');
+                switchTab('config');
+                return;
+            }
+
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.getElementById(`${tab}-tab`).classList.add('active');
+            
+            if (tab === 'manage') loadProducts();
+            if (tab === 'config') {
+                const saved = localStorage.getItem('firebaseConfig');
+                if (saved) document.getElementById('firebaseConfig').value = saved;
+            }
+        }
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                if (input.files[0].size > 2000000) {
+                    alert('Image is too large! Please use an image under 2MB');
+                    input.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function addProduct(e) {
+            e.preventDefault();
+            
+            if (!db) {
+                showAlert('add-alert', 'Firebase not configured!', 'danger');
+                return;
+            }
+
+            const name = document.getElementById('productName').value;
+            const category = document.getElementById('productCategory').value;
+            const price = document.getElementById('productPrice').value;
+            const imageFile = document.getElementById('productImage').files[0];
+            
+            try {
+                showAlert('add-alert', 'Adding product...', 'info');
+                
+                let imageData = '';
+                if (imageFile) {
+                    const reader = new FileReader();
+                    imageData = await new Promise((resolve) => {
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsDataURL(imageFile);
+                    });
+                }
+                
+                const newProduct = {
+                    name: name,
+                    category: category,
+                    price: parseInt(price),
+                    image: imageData,
+                    createdAt: Date.now()
+                };
+                
+                await db.ref('products').push(newProduct);
+                
+                showAlert('add-alert', 'Product added successfully! ✓', 'success');
+                document.getElementById('productForm').reset();
+                document.getElementById('imagePreview').style.display = 'none';
+                
+            } catch (error) {
+                showAlert('add-alert', 'Error: ' + error.message, 'danger');
+            }
+        }
+
+        function loadProducts() {
+            if (!db) return;
+            
+            db.ref('products').on('value', (snapshot) => {
+                const data = snapshot.val();
+                products = [];
+                
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        products.push({ id: key, ...data[key] });
+                    });
+                }
+                
+                renderProductsList();
+            });
+        }
+
+        function renderProductsList() {
+            const list = document.getElementById('productsList');
+            
+            if (products.length === 0) {
+                list.innerHTML = '<div class="alert alert-info">No products yet. Add your first product!</div>';
+                return;
+            }
+            
+            list.innerHTML = products.map(product => `
+                <div class="product-item">
+                    <div class="product-image-preview">
+                        ${product.image ? `<img src="${product.image}" alt="${product.name}">` : '📷'}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-details">
+                            ${product.category} • ₹${product.price}
+                        </div>
+                    </div>
+                    <div class="product-actions">
+                        <button class="btn btn-edit" onclick="editProduct('${product.id}')">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteProduct('${product.id}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('Delete this product?')) return;
+            
+            try {
+                await db.ref('products/' + id).remove();
+                showAlert('manage-alert', 'Product deleted! ✓', 'success');
+            } catch (error) {
+                showAlert('manage-alert', 'Error: ' + error.message, 'danger');
+            }
+        }
+
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+            
+            document.getElementById('editProductId').value = id;
+            document.getElementById('editProductName').value = product.name;
+            document.getElementById('editProductCategory').value = product.category;
+            document.getElementById('editProductPrice').value = product.price;
+            
+            if (product.image) {
+                document.getElementById('editPreviewImg').src = product.image;
+                document.getElementById('editImagePreview').style.display = 'block';
+            } else {
+                document.getElementById('editImagePreview').style.display = 'none';
+            }
+            
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            document.getElementById('editForm').reset();
+        }
+
+        function previewEditImage(input) {
+            if (input.files && input.files[0]) {
+                if (input.files[0].size > 2000000) {
+                    alert('Image is too large! Please use an image under 2MB');
+                    input.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('editPreviewImg').src = e.target.result;
+                    document.getElementById('editImagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function updateProduct(e) {
+            e.preventDefault();
+            
+            if (!db) {
+                alert('Firebase not configured!');
+                return;
+            }
+
+            const id = document.getElementById('editProductId').value;
+            const name = document.getElementById('editProductName').value;
+            const category = document.getElementById('editProductCategory').value;
+            const price = document.getElementById('editProductPrice').value;
+            const imageFile = document.getElementById('editProductImage').files[0];
+            
+            try {
+                showAlert('manage-alert', 'Updating product...', 'info');
+                
+                const product = products.find(p => p.id === id);
+                let imageData = product.image; // Keep existing image by default
+                
+                if (imageFile) {
+                    const reader = new FileReader();
+                    imageData = await new Promise((resolve) => {
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsDataURL(imageFile);
+                    });
+                }
+                
+                const updatedProduct = {
+                    name: name,
+                    category: category,
+                    price: parseInt(price),
+                    image: imageData,
+                    createdAt: product.createdAt,
+                    updatedAt: Date.now()
+                };
+                
+                await db.ref('products/' + id).set(updatedProduct);
+                
+                showAlert('manage-alert', 'Product updated successfully! ✓', 'success');
+                closeEditModal();
+                
+            } catch (error) {
+                showAlert('manage-alert', 'Error: ' + error.message, 'danger');
+            }
+        }
+
+        function loadSettings() {
+            if (!db) return;
+            
+            db.ref('settings/whatsappNumber').once('value', (snapshot) => {
+                const phone = snapshot.val();
+                if (phone) document.getElementById('whatsappNumber').value = phone;
+            });
+        }
+
+        async function saveSettings() {
+            if (!db) {
+                showAlert('settings-alert', 'Firebase not configured!', 'danger');
+                return;
+            }
+
+            const phone = document.getElementById('whatsappNumber').value;
+            
+            try {
+                await db.ref('settings').set({ whatsappNumber: phone });
+                showAlert('settings-alert', 'Settings saved! ✓', 'success');
+            } catch (error) {
+                showAlert('settings-alert', 'Error: ' + error.message, 'danger');
+            }
+        }
+
+        function showAlert(elementId, message, type) {
+            const alertDiv = document.getElementById(elementId);
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            if (type !== 'info') {
+                setTimeout(() => alertDiv.innerHTML = '', 3000);
+            }
+        }
+    </script>
+</body>
+</html>
