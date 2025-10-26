@@ -91,7 +91,7 @@ function orderOnWhatsApp(productId) {
     const message = `Hi! I'm interested in ordering:\n\n${product.name}\nPrice: ₹${product.price}\nCategory: ${product.category}`;
     
     // Get WhatsApp number from settings or use default
-    const phoneNumber = localStorage.getItem('whatsappNumber') || '1234567890';
+    const phoneNumber = localStorage.getItem('whatsappNumber') || '+919988009491';
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappURL, '_blank');
     
@@ -103,7 +103,7 @@ function orderOnWhatsApp(productId) {
 }
 
 function openWhatsApp() {
-    const phoneNumber = localStorage.getItem('whatsappNumber') || '1234567890';
+    const phoneNumber = localStorage.getItem('whatsappNumber') || '+919988009491';
     const message = 'Hi! I would like to know more about your products.';
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappURL, '_blank');
