@@ -79,6 +79,116 @@
             background: #fce4ec;
             color: #c2185b;
         }
+
+        /* Image Slider Styles */
+        .image-slider {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+        }
+
+        .slider-container {
+            display: flex;
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+
+        .slider-slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0.01) 100%);
+        }
+
+        .slider-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .slider-btn:hover {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .slider-btn.prev {
+            left: 10px;
+        }
+
+        .slider-btn.next {
+            right: 10px;
+        }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .slider-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+
+        .slider-dot.active {
+            background: #1a1a1a;
+            transform: scale(1.2);
+        }
+
+        .image-count {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            z-index: 10;
+        }
+
+        @media (max-width: 768px) {
+            .image-slider {
+                height: 300px;
+            }
+            
+            .slider-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -294,10 +404,58 @@
             });
         }
 
+        // Get product images (handles both old and new format)
+        function getProductImages(product) {
+            if (product.images && product.images.length > 0) {
+                return product.images;
+            } else if (product.image) {
+                return [product.image];
+            }
+            return [];
+        }
+
         function createProductCard(product) {
-            const imageHTML = product.image 
-                ? `<img src="${product.image}" alt="${product.name}">`
-                : `<span class="placeholder-icon">📷</span>`;
+            const images = getProductImages(product);
+            const hasMultipleImages = images.length > 1;
+            
+            let imageHTML;
+            if (images.length === 0) {
+                imageHTML = `
+                    <div class="product-image">
+                        <span class="placeholder-icon">📷</span>
+                    </div>
+                `;
+            } else if (hasMultipleImages) {
+                const slidesHTML = images.map((img, index) => `
+                    <div class="slider-slide">
+                        <img src="${img}" alt="${product.name} - Image ${index + 1}">
+                    </div>
+                `).join('');
+                
+                const dotsHTML = images.map((_, index) => `
+                    <span class="slider-dot ${index === 0 ? 'active' : ''}" onclick="event.stopPropagation(); goToSlide('${product.id}', ${index})"></span>
+                `).join('');
+                
+                imageHTML = `
+                    <div class="image-slider" id="slider-${product.id}">
+                        <div class="slider-container" data-current="0">
+                            ${slidesHTML}
+                        </div>
+                        <button class="slider-btn prev" onclick="event.stopPropagation(); changeSlide('${product.id}', -1)">‹</button>
+                        <button class="slider-btn next" onclick="event.stopPropagation(); changeSlide('${product.id}', 1)">›</button>
+                        <div class="slider-dots">
+                            ${dotsHTML}
+                        </div>
+                        <span class="image-count">${images.length} photos</span>
+                    </div>
+                `;
+            } else {
+                imageHTML = `
+                    <div class="product-image">
+                        <img src="${images[0]}" alt="${product.name}">
+                    </div>
+                `;
+            }
             
             const genderBadge = product.gender 
                 ? `<span class="gender-badge ${product.gender}">${product.gender === 'men' ? 'Men' : 'Women'}</span>`
@@ -305,9 +463,7 @@
             
             return `
                 <div class="product-card reveal" onclick="viewProduct('${product.id}')">
-                    <div class="product-image">
-                        ${imageHTML}
-                    </div>
+                    ${imageHTML}
                     <div class="product-info">
                         <div class="product-category">${product.category}${genderBadge}</div>
                         <div class="product-name">${product.name}</div>
@@ -318,6 +474,44 @@
                     </div>
                 </div>
             `;
+        }
+
+        // Slider functions
+        function changeSlide(productId, direction) {
+            const slider = document.getElementById(`slider-${productId}`);
+            if (!slider) return;
+            
+            const container = slider.querySelector('.slider-container');
+            const slides = container.querySelectorAll('.slider-slide');
+            const dots = slider.querySelectorAll('.slider-dot');
+            
+            let current = parseInt(container.dataset.current) || 0;
+            current += direction;
+            
+            if (current < 0) current = slides.length - 1;
+            if (current >= slides.length) current = 0;
+            
+            container.style.transform = `translateX(-${current * 100}%)`;
+            container.dataset.current = current;
+            
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === current);
+            });
+        }
+
+        function goToSlide(productId, index) {
+            const slider = document.getElementById(`slider-${productId}`);
+            if (!slider) return;
+            
+            const container = slider.querySelector('.slider-container');
+            const dots = slider.querySelectorAll('.slider-dot');
+            
+            container.style.transform = `translateX(-${index * 100}%)`;
+            container.dataset.current = index;
+            
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
         }
 
         function renderCategoryProducts() {
@@ -429,7 +623,9 @@
             if (!product) return;
             
             const genderText = product.gender ? ` (${product.gender === 'men' ? "Men's" : "Women's"})` : '';
-            const message = `${product.name}${genderText}\nPrice: ₹${product.price}\n\nClick "ORDER NOW" to purchase via WhatsApp`;
+            const images = getProductImages(product);
+            const imageCount = images.length > 0 ? `\n${images.length} photo(s) available` : '';
+            const message = `${product.name}${genderText}\nPrice: ₹${product.price}${imageCount}\n\nClick "ORDER NOW" to purchase via WhatsApp`;
             alert(message);
         }
 

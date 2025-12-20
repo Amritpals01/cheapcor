@@ -171,12 +171,24 @@
             justify-content: center;
             font-size: 2rem;
             overflow: hidden;
+            position: relative;
         }
 
         .product-image-preview img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .image-count-badge {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
         }
 
         .product-info {
@@ -250,15 +262,47 @@
             border-color: #1a1a1a;
         }
 
-        .image-preview {
+        .images-preview {
             margin-top: 1rem;
-            max-width: 200px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
-        .image-preview img {
-            width: 100%;
+        .image-preview-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
             border-radius: 5px;
+            overflow: hidden;
             border: 1px solid #ddd;
+        }
+
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview-item .remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 24px;
+            height: 24px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-preview-item .remove-btn:hover {
+            background: #dc3545;
         }
 
         .settings-section {
@@ -428,17 +472,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Product Image (optional, max 1MB recommended)</label>
+                    <label>Product Images (Select multiple, max 1MB each)</label>
                     <div class="file-input-wrapper">
-                        <input type="file" id="productImage" accept="image/*" onchange="previewImage(this)">
-                        <label for="productImage" class="file-input-label">
-                            📷 Click to upload image
+                        <input type="file" id="productImages" accept="image/*" multiple onchange="previewImages(this, 'imagesPreview')">
+                        <label for="productImages" class="file-input-label">
+                            📷 Click to upload images (you can select multiple)
                         </label>
                     </div>
-                    <small style="color: #666;">Tip: Use smaller images for faster loading</small>
-                    <div id="imagePreview" class="image-preview" style="display: none;">
-                        <img id="previewImg" src="" alt="Preview">
-                    </div>
+                    <small style="color: #666;">Tip: Select multiple images to show different angles of the product</small>
+                    <div id="imagesPreview" class="images-preview"></div>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Add Product</button>
@@ -522,16 +564,19 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Product Image</label>
+                    <label>Current Images</label>
+                    <div id="editCurrentImages" class="images-preview"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Add More Images</label>
                     <div class="file-input-wrapper">
-                        <input type="file" id="editProductImage" accept="image/*" onchange="previewEditImage(this)">
-                        <label for="editProductImage" class="file-input-label">
-                            📷 Change image (optional)
+                        <input type="file" id="editProductImages" accept="image/*" multiple onchange="previewImages(this, 'editNewImagesPreview')">
+                        <label for="editProductImages" class="file-input-label">
+                            📷 Click to add more images
                         </label>
                     </div>
-                    <div id="editImagePreview" class="image-preview" style="margin-top: 1rem;">
-                        <img id="editPreviewImg" src="" alt="Current image" style="max-width: 200px; border-radius: 5px; border: 1px solid #ddd;">
-                    </div>
+                    <div id="editNewImagesPreview" class="images-preview"></div>
                 </div>
 
                 <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
@@ -550,6 +595,9 @@
         let db = null;
         let products = [];
         let filteredProducts = [];
+        let selectedImages = []; // For add form
+        let editExistingImages = []; // For edit form - existing images
+        let editNewImages = []; // For edit form - new images to add
 
         window.onload = function() {
             initializeFirebase();
@@ -613,26 +661,69 @@
             document.getElementById(`${tab}-tab`).classList.add('active');
             
             if (tab === 'manage') loadProducts();
+            if (tab === 'add') {
+                selectedImages = [];
+                renderImagesPreview('imagesPreview', selectedImages);
+            }
             if (tab === 'config') {
                 const saved = localStorage.getItem('firebaseConfig');
                 if (saved) document.getElementById('firebaseConfig').value = saved;
             }
         }
 
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                if (input.files[0].size > 2000000) {
-                    alert('Image is too large! Please use an image under 2MB');
-                    input.value = '';
-                    return;
+        function previewImages(input, previewContainerId) {
+            const files = input.files;
+            const isEditForm = previewContainerId === 'editNewImagesPreview';
+            
+            if (files) {
+                for (let i = 0; i < files.length; i++) {
+                    if (files[i].size > 2000000) {
+                        alert(`Image "${files[i].name}" is too large! Please use images under 2MB`);
+                        continue;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        if (isEditForm) {
+                            editNewImages.push(e.target.result);
+                            renderImagesPreview('editNewImagesPreview', editNewImages, true);
+                        } else {
+                            selectedImages.push(e.target.result);
+                            renderImagesPreview('imagesPreview', selectedImages);
+                        }
+                    };
+                    reader.readAsDataURL(files[i]);
                 }
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('previewImg').src = e.target.result;
-                    document.getElementById('imagePreview').style.display = 'block';
-                };
-                reader.readAsDataURL(input.files[0]);
+            }
+            input.value = ''; // Reset input so same files can be selected again
+        }
+
+        function renderImagesPreview(containerId, images, isEditNew = false) {
+            const container = document.getElementById(containerId);
+            
+            if (images.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            container.innerHTML = images.map((img, index) => `
+                <div class="image-preview-item">
+                    <img src="${img}" alt="Preview ${index + 1}">
+                    <button type="button" class="remove-btn" onclick="removeImage(${index}, '${containerId}', ${isEditNew})">×</button>
+                </div>
+            `).join('');
+        }
+
+        function removeImage(index, containerId, isEditNew = false) {
+            if (containerId === 'imagesPreview') {
+                selectedImages.splice(index, 1);
+                renderImagesPreview('imagesPreview', selectedImages);
+            } else if (containerId === 'editCurrentImages') {
+                editExistingImages.splice(index, 1);
+                renderImagesPreview('editCurrentImages', editExistingImages);
+            } else if (isEditNew || containerId === 'editNewImagesPreview') {
+                editNewImages.splice(index, 1);
+                renderImagesPreview('editNewImagesPreview', editNewImages, true);
             }
         }
 
@@ -648,35 +739,28 @@
             const category = document.getElementById('productCategory').value;
             const gender = document.getElementById('productGender').value;
             const price = document.getElementById('productPrice').value;
-            const imageFile = document.getElementById('productImage').files[0];
             
             try {
                 showAlert('add-alert', 'Adding product...', 'info');
-                
-                let imageData = '';
-                if (imageFile) {
-                    const reader = new FileReader();
-                    imageData = await new Promise((resolve) => {
-                        reader.onload = (e) => resolve(e.target.result);
-                        reader.readAsDataURL(imageFile);
-                    });
-                }
                 
                 const newProduct = {
                     name: name,
                     category: category,
                     gender: gender,
                     price: parseInt(price),
-                    image: imageData,
+                    images: selectedImages, // Array of images
+                    image: selectedImages[0] || '', // Keep first image for backward compatibility
                     createdAt: Date.now()
                 };
                 
                 await db.ref('products').push(newProduct);
                 
                 const genderLabel = gender === 'men' ? "Men's" : "Women's";
-                showAlert('add-alert', `Product added successfully to ${genderLabel} ${category}! ✓`, 'success');
+                const imageCount = selectedImages.length;
+                showAlert('add-alert', `Product added with ${imageCount} image(s) to ${genderLabel} ${category}! ✓`, 'success');
                 document.getElementById('productForm').reset();
-                document.getElementById('imagePreview').style.display = 'none';
+                selectedImages = [];
+                renderImagesPreview('imagesPreview', selectedImages);
                 
             } catch (error) {
                 showAlert('add-alert', 'Error: ' + error.message, 'danger');
@@ -713,6 +797,16 @@
             renderProductsList();
         }
 
+        function getProductImages(product) {
+            // Handle both old (single image) and new (multiple images) format
+            if (product.images && product.images.length > 0) {
+                return product.images;
+            } else if (product.image) {
+                return [product.image];
+            }
+            return [];
+        }
+
         function renderProductsList() {
             const list = document.getElementById('productsList');
             
@@ -726,15 +820,20 @@
                     ? `<span class="gender-badge ${product.gender}">${product.gender === 'men' ? 'Men' : 'Women'}</span>` 
                     : '<span class="gender-badge" style="background: #f0f0f0; color: #666;">No Gender</span>';
                 
+                const images = getProductImages(product);
+                const imageCount = images.length;
+                const firstImage = images[0];
+                
                 return `
                     <div class="product-item">
                         <div class="product-image-preview">
-                            ${product.image ? `<img src="${product.image}" alt="${product.name}">` : '📷'}
+                            ${firstImage ? `<img src="${firstImage}" alt="${product.name}">` : '📷'}
+                            ${imageCount > 1 ? `<span class="image-count-badge">${imageCount} pics</span>` : ''}
                         </div>
                         <div class="product-info">
                             <div class="product-name">${product.name}${genderBadge}</div>
                             <div class="product-details">
-                                ${product.category} • ₹${product.price}
+                                ${product.category} • ₹${product.price} ${imageCount > 0 ? `• ${imageCount} image(s)` : ''}
                             </div>
                         </div>
                         <div class="product-actions">
@@ -767,12 +866,12 @@
             document.getElementById('editProductGender').value = product.gender || 'men';
             document.getElementById('editProductPrice').value = product.price;
             
-            if (product.image) {
-                document.getElementById('editPreviewImg').src = product.image;
-                document.getElementById('editImagePreview').style.display = 'block';
-            } else {
-                document.getElementById('editImagePreview').style.display = 'none';
-            }
+            // Load existing images
+            editExistingImages = getProductImages(product);
+            editNewImages = [];
+            
+            renderImagesPreview('editCurrentImages', editExistingImages);
+            renderImagesPreview('editNewImagesPreview', editNewImages, true);
             
             document.getElementById('editModal').style.display = 'block';
         }
@@ -780,23 +879,10 @@
         function closeEditModal() {
             document.getElementById('editModal').style.display = 'none';
             document.getElementById('editForm').reset();
-        }
-
-        function previewEditImage(input) {
-            if (input.files && input.files[0]) {
-                if (input.files[0].size > 2000000) {
-                    alert('Image is too large! Please use an image under 2MB');
-                    input.value = '';
-                    return;
-                }
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('editPreviewImg').src = e.target.result;
-                    document.getElementById('editImagePreview').style.display = 'block';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
+            editExistingImages = [];
+            editNewImages = [];
+            document.getElementById('editCurrentImages').innerHTML = '';
+            document.getElementById('editNewImagesPreview').innerHTML = '';
         }
 
         async function updateProduct(e) {
@@ -812,35 +898,29 @@
             const category = document.getElementById('editProductCategory').value;
             const gender = document.getElementById('editProductGender').value;
             const price = document.getElementById('editProductPrice').value;
-            const imageFile = document.getElementById('editProductImage').files[0];
             
             try {
                 showAlert('manage-alert', 'Updating product...', 'info');
                 
                 const product = products.find(p => p.id === id);
-                let imageData = product.image; // Keep existing image by default
                 
-                if (imageFile) {
-                    const reader = new FileReader();
-                    imageData = await new Promise((resolve) => {
-                        reader.onload = (e) => resolve(e.target.result);
-                        reader.readAsDataURL(imageFile);
-                    });
-                }
+                // Combine existing images with new images
+                const allImages = [...editExistingImages, ...editNewImages];
                 
                 const updatedProduct = {
                     name: name,
                     category: category,
                     gender: gender,
                     price: parseInt(price),
-                    image: imageData,
+                    images: allImages,
+                    image: allImages[0] || '', // Keep first image for backward compatibility
                     createdAt: product.createdAt,
                     updatedAt: Date.now()
                 };
                 
                 await db.ref('products/' + id).set(updatedProduct);
                 
-                showAlert('manage-alert', 'Product updated successfully! ✓', 'success');
+                showAlert('manage-alert', `Product updated with ${allImages.length} image(s)! ✓`, 'success');
                 closeEditModal();
                 
             } catch (error) {
