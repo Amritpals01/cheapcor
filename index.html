@@ -119,31 +119,46 @@
             height: 70px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             z-index: 10;
             transition: all 0.3s ease;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            line-height: 1;
-            padding: 0;
-            text-align: center;
+        }
+
+        .slider-btn::before {
+            content: '';
+            display: block;
+            width: 18px;
+            height: 18px;
+            border-top: 4px solid #1a1a1a;
+            border-right: 4px solid #1a1a1a;
+            position: absolute;
+            top: 50%;
         }
 
         .slider-btn.prev {
             left: 10px;
-            padding-right: 4px;
+        }
+
+        .slider-btn.prev::before {
+            transform: translateY(-50%) rotate(-135deg);
+            left: 28px;
         }
 
         .slider-btn.next {
             right: 10px;
-            padding-left: 4px;
+        }
+
+        .slider-btn.next::before {
+            transform: translateY(-50%) rotate(45deg);
+            right: 28px;
         }
 
         .slider-btn:hover {
             background: #1a1a1a;
-            color: white;
+        }
+
+        .slider-btn:hover::before {
+            border-color: white;
         }
 
 
@@ -192,7 +207,20 @@
             .slider-btn {
                 width: 55px;
                 height: 55px;
-                font-size: 1.8rem;
+            }
+
+            .slider-btn::before {
+                width: 12px;
+                height: 12px;
+                border-width: 3px;
+            }
+
+            .slider-btn.prev::before {
+                left: 23px;
+            }
+
+            .slider-btn.next::before {
+                right: 23px;
             }
         }
     </style>
@@ -447,8 +475,8 @@
                         <div class="slider-container" data-current="0">
                             ${slidesHTML}
                         </div>
-                        <button class="slider-btn prev" onclick="event.stopPropagation(); changeSlide('${product.id}', -1)">‹</button>
-                        <button class="slider-btn next" onclick="event.stopPropagation(); changeSlide('${product.id}', 1)">›</button>
+                        <button class="slider-btn prev" onclick="event.stopPropagation(); changeSlide('${product.id}', -1)"></button>
+                        <button class="slider-btn next" onclick="event.stopPropagation(); changeSlide('${product.id}', 1)"></button>
                         <div class="slider-dots">
                             ${dotsHTML}
                         </div>
