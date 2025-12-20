@@ -5,6 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheap Corner - Fashion & Fragrance</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .gender-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .gender-tab {
+            padding: 0.8rem 2rem;
+            background: transparent;
+            border: 2px solid #1a1a1a;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            transition: all 0.3s ease;
+        }
+        
+        .gender-tab:hover {
+            background: #f0f0f0;
+        }
+        
+        .gender-tab.active {
+            background: #1a1a1a;
+            color: white;
+        }
+        
+        .gender-section {
+            display: none;
+        }
+        
+        .gender-section.active {
+            display: block;
+        }
+        
+        .section-divider {
+            text-align: center;
+            margin: 1rem 0 1.5rem;
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 500;
+            position: relative;
+        }
+        
+        .section-divider::before,
+        .section-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 30%;
+            height: 1px;
+            background: #ddd;
+        }
+        
+        .section-divider::before {
+            left: 0;
+        }
+        
+        .section-divider::after {
+            right: 0;
+        }
+        
+        .gender-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .gender-badge.men {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .gender-badge.women {
+            background: #fce4ec;
+            color: #c2185b;
+        }
+    </style>
 </head>
 <body>
     <div class="bg-animation"></div>
@@ -45,41 +128,95 @@
         </div>
     </div>
 
+    <!-- Clothing Section -->
     <section class="category-section reveal" id="clothing-section">
         <div class="category-header">
             <h2>Clothing</h2>
             <p class="section-subtitle">Elevate Your Wardrobe</p>
-            <a class="view-all" onclick="filterAndScroll('clothing')">View All</a>
         </div>
-        <div class="products-grid" id="clothingGrid">
-            <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
-                Loading products...
+        
+        <div class="gender-tabs">
+            <button class="gender-tab active" onclick="switchGenderTab('clothing', 'men')">Men</button>
+            <button class="gender-tab" onclick="switchGenderTab('clothing', 'women')">Women</button>
+        </div>
+        
+        <div id="clothing-men" class="gender-section active">
+            <div class="section-divider">Men's Clothing</div>
+            <div class="products-grid" id="clothingMenGrid">
+                <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
+                    Loading products...
+                </div>
+            </div>
+        </div>
+        
+        <div id="clothing-women" class="gender-section">
+            <div class="section-divider">Women's Clothing</div>
+            <div class="products-grid" id="clothingWomenGrid">
+                <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
+                    Loading products...
+                </div>
             </div>
         </div>
     </section>
 
+    <!-- Undergarments Section -->
     <section class="category-section reveal" id="undergarments-section">
         <div class="category-header">
             <h2>Undergarments</h2>
             <p class="section-subtitle">Comfort Redefined</p>
-            <a class="view-all" onclick="filterAndScroll('undergarments')">View All</a>
         </div>
-        <div class="products-grid" id="undergarmentsGrid">
-            <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
-                Loading products...
+        
+        <div class="gender-tabs">
+            <button class="gender-tab active" onclick="switchGenderTab('undergarments', 'men')">Men</button>
+            <button class="gender-tab" onclick="switchGenderTab('undergarments', 'women')">Women</button>
+        </div>
+        
+        <div id="undergarments-men" class="gender-section active">
+            <div class="section-divider">Men's Undergarments</div>
+            <div class="products-grid" id="undergarmentsMenGrid">
+                <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
+                    Loading products...
+                </div>
+            </div>
+        </div>
+        
+        <div id="undergarments-women" class="gender-section">
+            <div class="section-divider">Women's Undergarments</div>
+            <div class="products-grid" id="undergarmentsWomenGrid">
+                <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
+                    Loading products...
+                </div>
             </div>
         </div>
     </section>
 
+    <!-- Fragrance Section -->
     <section class="category-section reveal" id="fragrance-section">
         <div class="category-header">
             <h2>Fragrances</h2>
             <p class="section-subtitle">Signature Scents</p>
-            <a class="view-all" onclick="filterAndScroll('fragrance')">View All</a>
         </div>
-        <div class="products-grid" id="fragranceGrid">
-            <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
-                Loading products...
+        
+        <div class="gender-tabs">
+            <button class="gender-tab active" onclick="switchGenderTab('fragrance', 'men')">Men</button>
+            <button class="gender-tab" onclick="switchGenderTab('fragrance', 'women')">Women</button>
+        </div>
+        
+        <div id="fragrance-men" class="gender-section active">
+            <div class="section-divider">Men's Fragrances</div>
+            <div class="products-grid" id="fragranceMenGrid">
+                <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
+                    Loading products...
+                </div>
+            </div>
+        </div>
+        
+        <div id="fragrance-women" class="gender-section">
+            <div class="section-divider">Women's Fragrances</div>
+            <div class="products-grid" id="fragranceWomenGrid">
+                <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
+                    Loading products...
+                </div>
             </div>
         </div>
     </section>
@@ -161,7 +298,6 @@
                 const phone = snapshot.val();
                 if (phone) {
                     whatsappNumber = phone;
-                    document.getElementById('footerPhone').textContent = '+' + phone;
                 }
             });
         }
@@ -171,13 +307,17 @@
                 ? `<img src="${product.image}" alt="${product.name}">`
                 : `<span class="placeholder-icon">📷</span>`;
             
+            const genderBadge = product.gender 
+                ? `<span class="gender-badge ${product.gender}">${product.gender === 'men' ? 'Men' : 'Women'}</span>`
+                : '';
+            
             return `
                 <div class="product-card reveal" onclick="viewProduct('${product.id}')">
                     <div class="product-image">
                         ${imageHTML}
                     </div>
                     <div class="product-info">
-                        <div class="product-category">${product.category}</div>
+                        <div class="product-category">${product.category}${genderBadge}</div>
                         <div class="product-name">${product.name}</div>
                         <div class="product-price">₹${product.price}</div>
                         <a href="#" class="whatsapp-btn" onclick="event.stopPropagation(); orderOnWhatsApp('${product.id}'); return false;">
@@ -189,31 +329,44 @@
         }
 
         function renderCategoryProducts() {
-            const clothingProducts = products.filter(p => p.category === 'clothing');
-            const undergarmentProducts = products.filter(p => p.category === 'undergarments');
-            const fragranceProducts = products.filter(p => p.category === 'fragrance');
+            // Clothing - Men & Women
+            const clothingMen = products.filter(p => p.category === 'clothing' && p.gender === 'men');
+            const clothingWomen = products.filter(p => p.category === 'clothing' && p.gender === 'women');
+            
+            // Undergarments - Men & Women
+            const undergarmentsMen = products.filter(p => p.category === 'undergarments' && p.gender === 'men');
+            const undergarmentsWomen = products.filter(p => p.category === 'undergarments' && p.gender === 'women');
+            
+            // Fragrances - Men & Women
+            const fragranceMen = products.filter(p => p.category === 'fragrance' && p.gender === 'men');
+            const fragranceWomen = products.filter(p => p.category === 'fragrance' && p.gender === 'women');
 
-            const clothingGrid = document.getElementById('clothingGrid');
-            const undergarmentGrid = document.getElementById('undergarmentsGrid');
-            const fragranceGrid = document.getElementById('fragranceGrid');
+            // Render Clothing
+            document.getElementById('clothingMenGrid').innerHTML = clothingMen.length > 0 
+                ? clothingMen.map(createProductCard).join('') 
+                : '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No men\'s clothing items yet</div>';
+            
+            document.getElementById('clothingWomenGrid').innerHTML = clothingWomen.length > 0 
+                ? clothingWomen.map(createProductCard).join('') 
+                : '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No women\'s clothing items yet</div>';
 
-            if (clothingProducts.length === 0) {
-                clothingGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No clothing items yet</div>';
-            } else {
-                clothingGrid.innerHTML = clothingProducts.map(createProductCard).join('');
-            }
+            // Render Undergarments
+            document.getElementById('undergarmentsMenGrid').innerHTML = undergarmentsMen.length > 0 
+                ? undergarmentsMen.map(createProductCard).join('') 
+                : '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No men\'s undergarments yet</div>';
+            
+            document.getElementById('undergarmentsWomenGrid').innerHTML = undergarmentsWomen.length > 0 
+                ? undergarmentsWomen.map(createProductCard).join('') 
+                : '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No women\'s undergarments yet</div>';
 
-            if (undergarmentProducts.length === 0) {
-                undergarmentGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No undergarment items yet</div>';
-            } else {
-                undergarmentGrid.innerHTML = undergarmentProducts.map(createProductCard).join('');
-            }
-
-            if (fragranceProducts.length === 0) {
-                fragranceGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No fragrance items yet</div>';
-            } else {
-                fragranceGrid.innerHTML = fragranceProducts.map(createProductCard).join('');
-            }
+            // Render Fragrances
+            document.getElementById('fragranceMenGrid').innerHTML = fragranceMen.length > 0 
+                ? fragranceMen.map(createProductCard).join('') 
+                : '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No men\'s fragrances yet</div>';
+            
+            document.getElementById('fragranceWomenGrid').innerHTML = fragranceWomen.length > 0 
+                ? fragranceWomen.map(createProductCard).join('') 
+                : '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No women\'s fragrances yet</div>';
 
             setTimeout(() => {
                 const reveals = document.querySelectorAll('.reveal');
@@ -223,6 +376,18 @@
                     }, i * 100);
                 });
             }, 100);
+        }
+
+        function switchGenderTab(category, gender) {
+            // Update tab buttons
+            const section = document.getElementById(category + '-section');
+            section.querySelectorAll('.gender-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show/hide gender sections
+            document.getElementById(category + '-men').classList.remove('active');
+            document.getElementById(category + '-women').classList.remove('active');
+            document.getElementById(category + '-' + gender).classList.add('active');
         }
 
         function scrollToSection(sectionId) {
@@ -249,7 +414,8 @@
             const product = products.find(p => p.id === productId);
             if (!product) return;
             
-            const message = `Hi! I'm interested in ordering:\n\n${product.name}\nPrice: ₹${product.price}\nCategory: ${product.category}`;
+            const genderText = product.gender ? ` (${product.gender === 'men' ? "Men's" : "Women's"})` : '';
+            const message = `Hi! I'm interested in ordering:\n\n${product.name}${genderText}\nPrice: ₹${product.price}\nCategory: ${product.category}`;
             const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
             window.open(whatsappURL, '_blank');
             
@@ -270,7 +436,8 @@
             const product = products.find(p => p.id === productId);
             if (!product) return;
             
-            const message = `${product.name}\nPrice: ₹${product.price}\n\nClick "ORDER NOW" to purchase via WhatsApp`;
+            const genderText = product.gender ? ` (${product.gender === 'men' ? "Men's" : "Women's"})` : '';
+            const message = `${product.name}${genderText}\nPrice: ₹${product.price}\n\nClick "ORDER NOW" to purchase via WhatsApp`;
             alert(message);
         }
 
