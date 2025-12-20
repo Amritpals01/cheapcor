@@ -43,30 +43,22 @@
         }
         
         .section-divider {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
             margin: 1rem 0 1.5rem;
             font-size: 1.1rem;
             color: #666;
             font-weight: 500;
-            position: relative;
         }
         
         .section-divider::before,
         .section-divider::after {
             content: '';
-            position: absolute;
-            top: 50%;
-            width: 30%;
+            flex: 1;
             height: 1px;
             background: #ddd;
-        }
-        
-        .section-divider::before {
-            left: 0;
-        }
-        
-        .section-divider::after {
-            right: 0;
         }
         
         .gender-badge {
@@ -141,7 +133,7 @@
         </div>
         
         <div id="clothing-men" class="gender-section active">
-            <div class="section-divider">Men's Clothing</div>
+            <div class="section-divider"><span>Men's Clothing</span></div>
             <div class="products-grid" id="clothingMenGrid">
                 <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
                     Loading products...
@@ -150,7 +142,7 @@
         </div>
         
         <div id="clothing-women" class="gender-section">
-            <div class="section-divider">Women's Clothing</div>
+            <div class="section-divider"><span>Women's Clothing</span></div>
             <div class="products-grid" id="clothingWomenGrid">
                 <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
                     Loading products...
@@ -172,7 +164,7 @@
         </div>
         
         <div id="undergarments-men" class="gender-section active">
-            <div class="section-divider">Men's Undergarments</div>
+            <div class="section-divider"><span>Men's Undergarments</span></div>
             <div class="products-grid" id="undergarmentsMenGrid">
                 <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
                     Loading products...
@@ -181,7 +173,7 @@
         </div>
         
         <div id="undergarments-women" class="gender-section">
-            <div class="section-divider">Women's Undergarments</div>
+            <div class="section-divider"><span>Women's Undergarments</span></div>
             <div class="products-grid" id="undergarmentsWomenGrid">
                 <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
                     Loading products...
@@ -203,7 +195,7 @@
         </div>
         
         <div id="fragrance-men" class="gender-section active">
-            <div class="section-divider">Men's Fragrances</div>
+            <div class="section-divider"><span>Men's Fragrances</span></div>
             <div class="products-grid" id="fragranceMenGrid">
                 <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
                     Loading products...
@@ -212,7 +204,7 @@
         </div>
         
         <div id="fragrance-women" class="gender-section">
-            <div class="section-divider">Women's Fragrances</div>
+            <div class="section-divider"><span>Women's Fragrances</span></div>
             <div class="products-grid" id="fragranceWomenGrid">
                 <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
                     Loading products...
