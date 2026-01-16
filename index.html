@@ -236,6 +236,7 @@
                 <li><a onclick="scrollToSection('home')">Home</a></li>
                 <li><a onclick="scrollToSection('clothing-section')">Clothing</a></li>
                 <li><a onclick="scrollToSection('undergarments-section')">Undergarments</a></li>
+                <li><a onclick="scrollToSection('accessories-section')">Accessories</a></li>
                 <li><a onclick="scrollToSection('fragrance-section')">Fragrances</a></li>
                 <li><a onclick="scrollToSection('contact')">Contact</a></li>
             </ul>
@@ -260,6 +261,7 @@
             <div class="category-pill active" onclick="showAllProducts()">All</div>
             <div class="category-pill" onclick="scrollToSection('clothing-section')">Clothing</div>
             <div class="category-pill" onclick="scrollToSection('undergarments-section')">Undergarments</div>
+            <div class="category-pill" onclick="scrollToSection('accessories-section')">Accessories</div>
             <div class="category-pill" onclick="scrollToSection('fragrance-section')">Fragrances</div>
         </div>
     </div>
@@ -326,6 +328,37 @@
         </div>
     </section>
 
+    <!-- Accessories Section -->
+    <section class="category-section reveal" id="accessories-section">
+        <div class="category-header">
+            <h2>Accessories</h2>
+            <p class="section-subtitle">Complete Your Look</p>
+        </div>
+        
+        <div class="gender-tabs">
+            <button class="gender-tab active" onclick="switchGenderTab('accessories', 'men')">Men</button>
+            <button class="gender-tab" onclick="switchGenderTab('accessories', 'women')">Women</button>
+        </div>
+        
+        <div id="accessories-men" class="gender-section active">
+            <div class="section-divider"><span>Men's Accessories</span></div>
+            <div class="products-grid" id="accessoriesMenGrid">
+                <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
+                    Loading products...
+                </div>
+            </div>
+        </div>
+        
+        <div id="accessories-women" class="gender-section">
+            <div class="section-divider"><span>Women's Accessories</span></div>
+            <div class="products-grid" id="accessoriesWomenGrid">
+                <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">
+                    Loading products...
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Fragrance Section -->
     <section class="category-section reveal" id="fragrance-section">
         <div class="category-header">
@@ -368,6 +401,7 @@
                 <ul>
                     <li><a onclick="scrollToSection('clothing-section')">Clothing</a></li>
                     <li><a onclick="scrollToSection('undergarments-section')">Undergarments</a></li>
+                    <li><a onclick="scrollToSection('accessories-section')">Accessories</a></li>
                     <li><a onclick="scrollToSection('fragrance-section')">Fragrances</a></li>
                     <li><a onclick="scrollToSection('home')">New Arrivals</a></li>
                 </ul>
@@ -557,6 +591,10 @@
             const undergarmentsMen = products.filter(p => p.category === 'undergarments' && p.gender === 'men');
             const undergarmentsWomen = products.filter(p => p.category === 'undergarments' && p.gender === 'women');
             
+            // Accessories - Men & Women
+            const accessoriesMen = products.filter(p => p.category === 'accessories' && p.gender === 'men');
+            const accessoriesWomen = products.filter(p => p.category === 'accessories' && p.gender === 'women');
+            
             // Fragrances - Men & Women
             const fragranceMen = products.filter(p => p.category === 'fragrance' && p.gender === 'men');
             const fragranceWomen = products.filter(p => p.category === 'fragrance' && p.gender === 'women');
@@ -578,6 +616,15 @@
             document.getElementById('undergarmentsWomenGrid').innerHTML = undergarmentsWomen.length > 0 
                 ? undergarmentsWomen.map(createProductCard).join('') 
                 : '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No women\'s undergarments yet</div>';
+
+            // Render Accessories
+            document.getElementById('accessoriesMenGrid').innerHTML = accessoriesMen.length > 0 
+                ? accessoriesMen.map(createProductCard).join('') 
+                : '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No men\'s accessories yet</div>';
+            
+            document.getElementById('accessoriesWomenGrid').innerHTML = accessoriesWomen.length > 0 
+                ? accessoriesWomen.map(createProductCard).join('') 
+                : '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No women\'s accessories yet</div>';
 
             // Render Fragrances
             document.getElementById('fragranceMenGrid').innerHTML = fragranceMen.length > 0 
@@ -692,8 +739,5 @@
             }
         });
     </script>
-
-    <!-- Vercel Analytics -->
-    <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
